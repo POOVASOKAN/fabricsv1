@@ -4,19 +4,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
-// eslint-disable-next-line no-unused-vars
 import * as THREE from "three";
-import { LightContext } from "./LightContext"; // Import the LightContext
-
+import { LightContext } from "./LightContext";
+import { MapContext } from "./MapContext";
 const Preview = () => {
   const { lights } = useContext(LightContext);
+  const { connectedMaps, materialParams } = useContext(MapContext);
   const [currentModel, setCurrentModel] = useState(null);
-  const modelPath = "/Tetrad-Ruben-Midi-Standard.fbx"; // Your 3D model path
-
+  const modelPath = "/Tetrad-Ruben-Midi-Standard.fbx";
   useEffect(() => {
     const loadModel = async () => {
       if (currentModel) {
-        // Dispose of the previous model before loading a new one
         currentModel.traverse((child) => {
           if (child.isMesh) {
             child.geometry.dispose();
@@ -33,13 +31,97 @@ const Preview = () => {
         loader.load(modelPath, resolve, undefined, reject);
       });
 
-      setCurrentModel(loadedModel); // Set the newly loaded model
+      setCurrentModel(loadedModel);
     };
 
     loadModel();
   }, [modelPath]);
 
-  // Function to dynamically create light components based on the lights in the context
+  useEffect(() => {
+    console.log("Applying materials with connectedMaps:", connectedMaps);
+    const applyMaterial = () => {
+      if (currentModel && Object.keys(connectedMaps).length > 0) {
+        const loader = new THREE.TextureLoader();
+
+        currentModel.traverse((child) => {
+          if (child.isMesh) {
+            const materialConfig = {
+              bumpScale: materialParams.bumpScale,
+              normalScale: new THREE.Vector2(
+                materialParams.normalX,
+                materialParams.normalY
+              ),
+              displacementScale: materialParams.displacementScale,
+              displacementBias: materialParams.displacementBias,
+              metalness: materialParams.metalness,
+              roughness: materialParams.roughness,
+              emissiveIntensity: materialParams.emissive,
+              envMapIntensity: materialParams.envIntensity,
+              specularIntensity: materialParams.specular,
+              opacity: materialParams.opacity,
+              aoMapIntensity: materialParams.ao,
+              sheenIntensity: materialParams.sheenIntensity,
+              sheenRoughness: materialParams.sheenRoughness,
+              side: THREE.DoubleSide,
+            };
+
+            Object.entries(connectedMaps).forEach(([mapType, file]) => {
+              console.log(`Loading texture for ${mapType}:`, file);
+              if (file) {
+                loader.load(URL.createObjectURL(file), (texture) => {
+                  texture.encoding = THREE.sRGBEncoding;
+                  texture.wrapS = THREE.RepeatWrapping;
+                  texture.wrapT = THREE.RepeatWrapping;
+                  texture.needsUpdate = true;
+
+                  switch (mapType.toUpperCase()) {
+                    case "DIFFUSE":
+                      materialConfig.map = texture;
+                      break;
+                    case "BUMP":
+                      materialConfig.bumpMap = texture;
+                      break;
+                    case "NORMAL":
+                      materialConfig.normalMap = texture;
+                      break;
+                    case "DISPLACEMENT":
+                      materialConfig.displacementMap = texture;
+                      break;
+                    case "EMISSIVE":
+                      materialConfig.emissiveMap = texture;
+                      break;
+                    case "AO":
+                      materialConfig.aoMap = texture;
+                      break;
+                    case "METALNESS":
+                      materialConfig.metalnessMap = texture;
+                      break;
+                    case "ROUGHNESS":
+                      materialConfig.roughnessMap = texture;
+                      break;
+                    default:
+                      break;
+                  }
+
+                  child.material = new THREE.MeshPhysicalMaterial(
+                    materialConfig
+                  );
+                  child.material.needsUpdate = true;
+                });
+              }
+            });
+
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+      }
+    };
+
+    applyMaterial();
+  }, [currentModel, connectedMaps, materialParams]);
+
+  // Light Context
   const renderLights = () => {
     return lights.map((light) => {
       switch (light.type.toUpperCase()) {
@@ -114,4 +196,4 @@ const Preview = () => {
 };
 
 export default Preview;
-//v3 - All UI updated
+//v5
