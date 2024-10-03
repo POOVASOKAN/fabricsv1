@@ -41,6 +41,7 @@ const CameraSettings = () => {
   } = useContext(CameraContext);
 
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+
   const [openWarningSnackbar, setOpenWarningSnackbar] = useState(false);
   const [cameraType, setCameraType] = useState("perspective");
   const [cameraName, setCameraName] = useState("");
@@ -52,6 +53,8 @@ const CameraSettings = () => {
   //  rename dialog
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameInput, setRenameInput] = useState("");
+
+  const [setCameraSuccess, setSetCameraSuccess] = useState(false);
 
   const maxCameras = 4;
 
@@ -81,7 +84,7 @@ const CameraSettings = () => {
 
   const handleViewCameraClick = (index) => {
     if (cameraChanged) {
-      setUnsavedCameraSnackbar(true); // Show warning snackbar if unsaved changes exist
+      // setUnsavedCameraSnackbar(true); // Show warning snackbar if unsaved changes exist
     } else {
       setActiveCamera(index);
       handleViewCamera();
@@ -91,6 +94,8 @@ const CameraSettings = () => {
   const handleSetCamera = () => {
     saveCameraSettings();
     setCameraChanged(false); // Reset camera change tracker
+    setSetCameraSuccess(true);
+    // setOpenSuccessSnackbar(true);
   };
   // Snackbar close handlers
   const handleSuccessSnackbarClose = () => {
@@ -369,7 +374,7 @@ const CameraSettings = () => {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={saveCameraSettings}
+                  onClick={handleSetCamera}
                   sx={{
                     width: "100%",
                     textTransform: "none",
@@ -516,6 +521,18 @@ const CameraSettings = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar for Set Camera Success */}
+      <Snackbar
+        open={setCameraSuccess}
+        autoHideDuration={3000}
+        onClose={handleSuccessSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSuccessSnackbarClose} severity="success">
+          Camera saved successfully! Click View Camera to see the changes.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
