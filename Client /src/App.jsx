@@ -24,6 +24,9 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+// eslint-disable-next-line no-unused-vars
+import { Camera } from "three";
+import { CameraProvider } from "./Components/CameraContext";
 
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -155,69 +158,71 @@ function App() {
   );
 
   return (
-    <LightProvider>
-      <MapProvider>
-        <div style={{ height: "100vh", width: "100vw" }}>
-          <Split
-            className="split-container"
-            sizes={[50, 50]}
-            minSize={100}
-            expandToMin={false}
-            gutterSize={10}
-            direction="horizontal"
-            cursor="col-resize"
-            style={{ height: "100vh" }}
-          >
-            <Preview />
-
-            <div
-              style={{
-                flexGrow: 1,
-                height: "100%",
-                position: "relative",
-              }}
+    <CameraProvider>
+      <LightProvider>
+        <MapProvider>
+          <div style={{ height: "100vh", width: "100vw" }}>
+            <Split
+              className="split-container"
+              sizes={[50, 50]}
+              minSize={100}
+              expandToMin={false}
+              gutterSize={10}
+              direction="horizontal"
+              cursor="col-resize"
+              style={{ height: "100vh" }}
             >
-              <ReactFlowProvider>
-                <ReactFlow
-                  nodes={nodes}
-                  edges={edges}
-                  nodeTypes={nodeTypes}
-                  onNodesChange={onNodesChange}
-                  onEdgesChange={onEdgesChange}
-                  onConnect={onConnect}
-                  onEdgeDoubleClick={onEdgeDoubleClick}
-                  onNodeContextMenu={onNodeContextMenu}
-                  fitView
-                  defaultEdgeOptions={edgeOptions}
-                >
-                  <Controls />
-                  <Background />
-                </ReactFlow>
-              </ReactFlowProvider>
-            </div>
-          </Split>
+              <Preview />
 
-          <ControlGUI addMapNode={addMapNode} />
+              <div
+                style={{
+                  flexGrow: 1,
+                  height: "100%",
+                  position: "relative",
+                }}
+              >
+                <ReactFlowProvider>
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    nodeTypes={nodeTypes}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    onEdgeDoubleClick={onEdgeDoubleClick}
+                    onNodeContextMenu={onNodeContextMenu}
+                    fitView
+                    defaultEdgeOptions={edgeOptions}
+                  >
+                    <Controls />
+                    <Background />
+                  </ReactFlow>
+                </ReactFlowProvider>
+              </div>
+            </Split>
 
-          <Dialog open={modalOpen} onClose={closeModal}>
-            <DialogTitle>Delete Node</DialogTitle>
-            <DialogContent>
-              Are you sure you want to delete this map node?
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeModal} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={confirmDeleteNode} color="secondary">
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      </MapProvider>
-    </LightProvider>
+            <ControlGUI addMapNode={addMapNode} />
+
+            <Dialog open={modalOpen} onClose={closeModal}>
+              <DialogTitle>Delete Node</DialogTitle>
+              <DialogContent>
+                Are you sure you want to delete this map node?
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={closeModal} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={confirmDeleteNode} color="secondary">
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        </MapProvider>
+      </LightProvider>
+    </CameraProvider>
   );
 }
 
 export default App;
-//v5
+//v5 with context
