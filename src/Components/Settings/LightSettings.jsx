@@ -161,16 +161,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -184,16 +184,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -207,16 +207,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -253,16 +253,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -276,16 +276,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -299,16 +299,16 @@ const LightSettings = () => {
         }
         type="number"
         sx={{
-          width: "150px",
+          width: "150px", // Adjust the width here
           "& .MuiInputBase-root": {
             height: "25px",
             padding: "0px",
-            fontSize: "9px",
-            textAlign: "center",
+            fontSize: "9px", // Ensure the font size is clear
+            textAlign: "center", // Align text to the center
             backgroundColor: "#e0e0e0",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
+            border: "none", // Customize the border color here
           },
         }}
       />
@@ -567,7 +567,6 @@ const LightSettings = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginBottom: "70px",
         }}
       >
         <FormControl

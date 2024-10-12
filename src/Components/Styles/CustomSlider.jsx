@@ -85,4 +85,4 @@ const CustomSlider = ({
 };
 
 export default CustomSlider;
-//v3 - All UI updated
+//final

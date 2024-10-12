@@ -1,7 +1,5 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import {
   Accordion,
   AccordionSummary,
@@ -27,7 +25,7 @@ import CameraSettings from "./Settings/CameraSettings";
 import ColorPicker from "./Styles/ColorPicker.jsx";
 import LightSettings from "./Settings/LightSettings.jsx";
 
-const ControlGUI = ({ addMapNode }) => {
+const Controls = () => {
   const [open, setOpen] = useState(true);
   const [selectedIcon, setSelectedIcon] = useState("materials");
   const [bumpScale, setBumpScale] = useState(0.5);
@@ -46,7 +44,6 @@ const ControlGUI = ({ addMapNode }) => {
   const [ao, setAo] = useState(1);
   const [sheenIntensity, setSheenIntensity] = useState(0);
   const [sheenRoughness, setSheenRoughness] = useState(1);
-  const [loading, setLoading] = useState(false);
   const handleToggle = () => {
     setOpen(!open);
   };
@@ -272,7 +269,7 @@ const ControlGUI = ({ addMapNode }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
-            overflowY: "auto",
+            overflowY: "hidden",
           }}
         >
           <Box className="container">
@@ -300,7 +297,7 @@ const ControlGUI = ({ addMapNode }) => {
 
           {/* Render Material Settings  */}
           {selectedIcon === "materials" ? (
-            <Box sx={{ maxHeight: "80vh", overflowY: "auto" }}>
+            <Box>
               {/* Accordion Section for materials */}
               {[
                 "DIFFUSE",
@@ -683,63 +680,6 @@ const ControlGUI = ({ addMapNode }) => {
           ) : null}
         </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            backgroundColor: "#333",
-            padding: "5px",
-            gap: "10px",
-            minHeight: "50px",
-          }}
-        >
-          {selectedIcon === "materials" ? (
-            <Button
-              variant="contained"
-              onClick={() => addMapNode()}
-              sx={{
-                backgroundColor: "green",
-                color: "white",
-                borderRadius: "10px",
-                flexGrow: 1,
-                fontSize: "10px",
-                padding: "5px 10px",
-                marginRight: "5px",
-                "&:hover": {
-                  backgroundColor: "darkgreen",
-                },
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              Add Map
-            </Button>
-          ) : selectedIcon === "sun" ? (
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "green",
-                color: "white",
-                borderRadius: "10px",
-                flexGrow: 1,
-                fontSize: "10px",
-                padding: "5px 10px",
-                "&:hover": {
-                  backgroundColor: "darkgreen",
-                },
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              startIcon={<CheckIcon sx={{ fontSize: "12px" }} />}
-            >
-              Save Light Scene
-            </Button>
-          ) : null}
-        </Box>
-
         {/* Footer Section */}
         <Box
           sx={{
@@ -810,9 +750,5 @@ const ControlGUI = ({ addMapNode }) => {
   );
 };
 
-ControlGUI.propTypes = {
-  addMapNode: PropTypes.func.isRequired,
-};
-
-export default ControlGUI;
+export default Controls;
 //v3 - All UI updated
