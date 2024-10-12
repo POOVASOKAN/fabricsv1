@@ -16,7 +16,8 @@ export const LightProvider = ({ children }) => {
       name: "Directional Light",
       intensity: 0.8,
       position: { x: 0, y: 5, z: 5 },
-      castShadow: true,
+      // castShadow: true,
+      bias: -0.005,
     },
     {
       id: 3,
@@ -80,6 +81,7 @@ export const LightProvider = ({ children }) => {
         intensity: 1,
         position: { x: 0, y: 5, z: 0 },
         castShadow: false,
+        bias: -0.005,
       },
       HEMISPHERE: {
         intensity: 0.6,
@@ -160,3 +162,4 @@ export const LightProvider = ({ children }) => {
   );
 };
 //v3 - All UI updated
+//v4 - with UI with figma
