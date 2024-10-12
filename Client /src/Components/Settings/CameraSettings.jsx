@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+
 import {
   Accordion,
   AccordionSummary,
@@ -21,11 +22,13 @@ import {
   DialogContent,
   DialogTitle,
   Tooltip,
+  Divider,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CustomSlider from "../Styles/CustomSlider";
 import { CameraContext } from "../CameraContext";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const CameraSettings = () => {
   const {
@@ -41,6 +44,7 @@ const CameraSettings = () => {
   } = useContext(CameraContext);
 
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+
   const [openWarningSnackbar, setOpenWarningSnackbar] = useState(false);
   const [cameraType, setCameraType] = useState("perspective");
   const [cameraName, setCameraName] = useState("");
@@ -53,6 +57,14 @@ const CameraSettings = () => {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameInput, setRenameInput] = useState("");
 
+  const [setCameraSuccess, setSetCameraSuccess] = useState(false);
+  // State for tracking the expanded panel
+  const [expandedPanel, setExpandedPanel] = useState(null);
+
+  // Accordion toggle handler
+  const handleAccordionChange = (panelName) => (event, isExpanded) => {
+    setExpandedPanel(isExpanded ? panelName : null);
+  };
   const maxCameras = 4;
 
   const handleAddCamera = () => {
@@ -81,16 +93,19 @@ const CameraSettings = () => {
 
   const handleViewCameraClick = (index) => {
     if (cameraChanged) {
-      setUnsavedCameraSnackbar(true); // Show warning snackbar if unsaved changes exist
+      // setUnsavedCameraSnackbar(true); // Show warning snackbar if unsaved changes exist
     } else {
       setActiveCamera(index);
       handleViewCamera();
+      setCameraChanged(false);
     }
   };
 
   const handleSetCamera = () => {
     saveCameraSettings();
-    setCameraChanged(false); // Reset camera change tracker
+    setCameraChanged(false);
+    setSetCameraSuccess(true);
+    // setOpenSuccessSnackbar(true);
   };
   // Snackbar close handlers
   const handleSuccessSnackbarClose = () => {
@@ -206,14 +221,14 @@ const CameraSettings = () => {
         padding: "5px",
         display: "flex",
         flexDirection: "column",
-        overflowY: "hidden",
+        overflowY: "auto",
         height: "100vh",
       }}
     >
       {/* Camera Settings Accordion List */}
       <Box
         sx={{
-          height: "calc(100vh - 450px)",
+          flexGrow: 1,
           overflowY: "auto",
           paddingRight: "10px",
           "&::-webkit-scrollbar": { width: "8px" },
@@ -229,6 +244,8 @@ const CameraSettings = () => {
             key={index}
             disableGutters
             elevation={0}
+            expanded={expandedPanel === camera.name}
+            onChange={handleAccordionChange(camera.name)}
             sx={{
               border: "none",
               padding: "0px",
@@ -244,11 +261,39 @@ const CameraSettings = () => {
             <AccordionSummary
               sx={{ minHeight: "20px", padding: "0px", margin: 0 }}
             >
-              <ExpandMoreIcon sx={{ fontSize: "12px", paddingRight: "3px" }} />
-              <Typography
-                sx={{ fontSize: "8px", fontWeight: "normal", margin: 0 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
               >
-                {camera.name} SETTINGS
+                {/* Conditional Rendering for Icon */}
+                {expandedPanel === camera.name ? (
+                  <ExpandMoreIcon sx={{ fontSize: "21px" }} />
+                ) : (
+                  <ChevronRightIcon sx={{ fontSize: "21px" }} />
+                )}
+              </Box>
+              {/* <ExpandMoreIcon sx={{ fontSize: "12px", paddingRight: "3px" }} /> */}
+              <Typography
+                sx={{
+                  width: "117px",
+                  position: "relative",
+                  fontSize: "10px",
+                  letterSpacing: "0.02em",
+                  lineHeight: "35px",
+                  textTransform: "uppercase",
+                  fontWeight: 800,
+                  fontFamily: "Avenir, sans-serif",
+                  color: "#282828",
+                  textAlign: "left",
+                  display: "inline-block",
+                  height: "36px",
+                  margin: 0,
+                }}
+              >
+                {camera.name} Settings
               </Typography>
               {/* Menu  Position for renmae , delete , duplicate camera  */}
               <Box
@@ -257,6 +302,8 @@ const CameraSettings = () => {
                   alignItems: "center",
                   gap: 1,
                   marginLeft: "auto",
+                  fontFamily: "Avenir, sans-serif",
+                  color: "#282828",
                 }}
               >
                 <IconButton
@@ -283,8 +330,8 @@ const CameraSettings = () => {
             </AccordionSummary>
             <AccordionDetails sx={{ padding: "0px", marginTop: "2px" }}>
               {/* Camera Position Sliders */}
-              <Typography sx={{ fontSize: "10px", mb: 1 }}>Position</Typography>
-              {["x", "y", "z"].map((axis) => (
+
+              {/* {["x", "y", "z"].map((axis) => (
                 <CustomSlider
                   key={`position-${axis}`}
                   value={camera.settings.position[axis]}
@@ -296,26 +343,77 @@ const CameraSettings = () => {
                   max={100}
                   step={0.01}
                 />
-              ))}
+              ))} */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  marginBottom: "20px",
+                }}
+              >
+                <Typography sx={{ fontSize: "12px", marginRight: "10px" }}>
+                  cameraPos
+                </Typography>
 
-              {/* Target Position Sliders */}
-              <Typography sx={{ fontSize: "10px", mt: 2 }}>
-                Target Position
-              </Typography>
-              {["x", "y", "z"].map((axis) => (
-                <CustomSlider
-                  key={`target-${axis}`}
-                  value={camera.settings.target[axis]}
-                  onChange={(e, newValue) => handleTargetChange(axis, newValue)}
-                  label={`Target ${axis.toUpperCase()}`}
-                  min={0}
-                  max={100}
-                  step={0.01}
-                />
-              ))}
+                {["x", "y", "z"].map((axis) => (
+                  <Box
+                    key={`position-${axis}`}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: "4px",
+                      padding: "2px 6px",
+                    }}
+                  >
+                    {/* <Typography
+                      sx={{
+                        fontSize: "10px",
+                        color: "#666",
+                        marginRight: "2px",
+                      }}
+                    >
+                      {axis.toUpperCase()}
+                    </Typography> */}
+                    <TextField
+                      type="number"
+                      value={camera.settings.position[axis]}
+                      onChange={(e) =>
+                        handlePositionChange(axis, parseFloat(e.target.value))
+                      }
+                      inputProps={{
+                        step: "0.1",
+                        style: {
+                          textAlign: "center",
+                          padding: "0",
+                          height: "22px",
+                        },
+                      }}
+                      sx={{
+                        width: "40px", // Smaller width for matching the design
+                        "& .MuiInputBase-input": {
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          color: "green",
+                          textAlign: "center",
+                          padding: "0", // Removing extra padding
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "transparent", // No border outline
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
 
               {/* Far, Near, FOV Sliders */}
-              <CustomSlider
+              {/*old  */}
+              {/* <CustomSlider
                 value={camera.settings.near}
                 onChange={handleNearChange}
                 label="Near"
@@ -338,7 +436,161 @@ const CameraSettings = () => {
                 min={10}
                 max={100}
                 step={0.1}
-              />
+              /> */}
+              {/* Far, Near, FOV Sliders */}
+              {/*new  */}
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: "6px" }}
+              >
+                {["near", "far", "fov"].map((setting) => (
+                  <Box
+                    key={setting}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "6px",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                        color: "#333",
+                        minWidth: "30px",
+                        textAlign: "left",
+                        flexShrink: 1,
+                        marginRight: "50px",
+                      }}
+                    >
+                      {setting.charAt(0).toUpperCase() + setting.slice(1)}{" "}
+                      {/* Capitalize first letter */}
+                    </Typography>
+                    <TextField
+                      type="number"
+                      value={camera.settings[setting]}
+                      onChange={(e) => {
+                        const newValue = parseFloat(e.target.value);
+                        if (!isNaN(newValue)) {
+                          if (setting === "near") {
+                            handleNearChange(null, newValue);
+                          } else if (setting === "far") {
+                            handleFarChange(null, newValue);
+                          } else if (setting === "fov") {
+                            handleFovChange(null, newValue);
+                          }
+                        }
+                      }}
+                      inputProps={{
+                        step:
+                          setting === "near"
+                            ? "0.01"
+                            : setting === "far"
+                            ? "1"
+                            : "0.1", // Different steps for each
+                        style: {
+                          textAlign: "center",
+                          padding: "5px 5px",
+                          height: "25px", // Smaller height to match the design
+                        },
+                      }}
+                      sx={{
+                        flexGrow: 1,
+                        width: "80px", // Adjusted width for more compact look
+                        backgroundColor: "#f0f0f0", // Background color for consistency
+                        "& .MuiInputBase-input": {
+                          fontSize: "12px", // Adjust the font size for input
+                          fontWeight: "bold",
+                          color: "green", // Green color for consistency
+                          textAlign: "center",
+                          padding: "0",
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "transparent", // Remove the default border
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
+
+              {/* Target Position Sliders */}
+              {/* <Typography sx={{ fontSize: "10px", mt: 2 }}>
+                Target Position
+              </Typography>
+              {["x", "y", "z"].map((axis) => (
+                <CustomSlider
+                  key={`target-${axis}`}
+                  value={camera.settings.target[axis]}
+                  onChange={(e, newValue) => handleTargetChange(axis, newValue)}
+                  label={`Target ${axis.toUpperCase()}`}
+                  min={0}
+                  max={100}
+                  step={0.01}
+                />
+              ))} */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                <Typography sx={{ fontSize: "12px", marginRight: "10px" }}>
+                  targetPos
+                </Typography>
+
+                {["x", "y", "z"].map((axis) => (
+                  <Box
+                    key={`target-${axis}`}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: "4px",
+                      padding: "2px 6px",
+                    }}
+                  >
+                    <TextField
+                      type="number"
+                      value={camera.settings.target[axis]}
+                      onChange={(e) =>
+                        handleTargetChange(axis, parseFloat(e.target.value))
+                      }
+                      inputProps={{
+                        step: "0.1",
+                        style: {
+                          textAlign: "center",
+                          padding: "0",
+                          height: "22px",
+                        },
+                      }}
+                      sx={{
+                        width: "40px", // Smaller width for matching the design
+                        "& .MuiInputBase-input": {
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          color: "green",
+                          textAlign: "center",
+                          padding: "0", // Removing extra padding
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "transparent", // No border outline
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
 
               {/* View Camera and Set Camera Buttons */}
               <Box display="flex" flexDirection="column" gap={2} mt={2}>
@@ -369,7 +621,7 @@ const CameraSettings = () => {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={saveCameraSettings}
+                  onClick={handleSetCamera}
                   sx={{
                     width: "100%",
                     textTransform: "none",
@@ -393,16 +645,16 @@ const CameraSettings = () => {
       {/* Add Camera Form - */}
       <Box
         sx={{
-          position: "absolute",
-          bottom: 65,
+          position: "sticky",
+          bottom: 0,
           marginTop: "10px",
           width: "100%",
           padding: "10px",
-          backgroundColor: "#f1f1f1",
+          backgroundColor: "#fff",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginBottom: "70px",
+          marginBottom: "0px",
         }}
       >
         <FormControl
@@ -410,7 +662,7 @@ const CameraSettings = () => {
           className="custom-text-field"
           sx={{ marginBottom: 3, width: "70%" }}
         >
-          <InputLabel
+          {/* <InputLabel
             shrink={true}
             sx={{
               transform: "translate(14px, -6px) scale(0.75)",
@@ -419,30 +671,101 @@ const CameraSettings = () => {
             }}
           >
             Camera Type
-          </InputLabel>
+          </InputLabel> */}
           <Select
+            displayEmpty
             value={cameraType}
             onChange={(e) => setCameraType(e.target.value)}
-            label="Camera Type"
+            label=""
+            sx={{
+              backgroundColor: "transparent",
+              fontFamily: "Avenir",
+              fontSize: "11px",
+              fontWeight: 400,
+              lineHeight: "35px",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#529d36",
+                borderWidth: "1px",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#529d36",
+              },
+            }}
+            inputProps={{
+              "aria-label": "Without label",
+              style: {
+                fontFamily: "Avenir",
+                fontSize: "11px",
+                fontWeight: 400,
+                lineHeight: "35px",
+                letterSpacing: "0.02em",
+                textAlign: "left",
+              },
+            }}
           >
+            <MenuItem value="" disabled>
+              <span
+                style={{
+                  fontStyle: "normal",
+                  fontFamily: "Avenir",
+                  fontSize: "11px",
+                }}
+              >
+                Camera Type
+              </span>
+            </MenuItem>
             <MenuItem value="perspective">Perspective</MenuItem>
           </Select>
         </FormControl>
 
         <TextField
-          variant="outlined"
+          variant="outlined" //
           className="custom-text-field"
           label="Camera Name"
           value={cameraName}
           onChange={(e) => setCameraName(e.target.value)}
-          fullWidth
-          sx={{ marginBottom: 2, width: "70%" }}
-          InputLabelProps={{
-            shrink: true,
-            style: {
-              transform: "translate(14px, -6px) scale(0.75)",
-              backgroundColor: "white",
-              padding: "0 4px",
+          sx={{
+            marginBottom: 2,
+            width: "70%",
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "#529d36",
+                borderWidth: "1px",
+                borderRadius: "4px",
+              },
+              "&:hover fieldset": {
+                borderColor: "#529d36",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#529d36",
+              },
+            },
+            "& .MuiInputBase-input": {
+              fontFamily: "Avenir",
+              fontSize: "11px !important",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: "1.5 !important",
+              padding: "12px 14px !important",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+            },
+            "& .MuiFormLabel-root": {
+              fontFamily: "Avenir",
+              fontSize: "11px",
+              color: "#666",
+            },
+            "& .MuiInputBase-input::placeholder": {
+              fontFamily: "Avenir !important",
+              fontSize: "11px !important",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: "1.5",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+              color: "#666",
             },
           }}
         />
@@ -452,16 +775,16 @@ const CameraSettings = () => {
           onClick={handleAddCamera}
           disabled={cameras.length >= 4}
           sx={{
-            backgroundColor: "green",
+            backgroundColor: "#529D36",
             color: "white",
-            borderRadius: "10px",
-            flexGrow: 1,
-            fontSize: "10px",
-            padding: "5px 10px",
-            "&:hover": { backgroundColor: "darkgreen" },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            width: "190px",
+            height: "30px",
+            padding: 0,
+            minWidth: 0,
+            borderRadius: "3px 0px 0px 0px",
+            "&:hover": {
+              backgroundColor: "darkgreen",
+            },
           }}
         >
           Add Camera
@@ -516,10 +839,21 @@ const CameraSettings = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar for Set Camera Success */}
+      <Snackbar
+        open={setCameraSuccess}
+        autoHideDuration={3000}
+        onClose={handleSuccessSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSuccessSnackbarClose} severity="success">
+          Camera saved successfully! Click View Camera to see the changes.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
 export default CameraSettings;
 //1 camera full working with context + menu
-//

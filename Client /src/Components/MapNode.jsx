@@ -10,17 +10,19 @@ const MapNode = ({ id, data }) => {
   const { updateConnectedMaps } = useContext(MapContext);
 
   const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }; // if block
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const fileName = file.name;
+        const thumbnail = reader.result;
 
-        data.updateNodeData(id, file, reader.result, fileName);
+        data.updateNodeData(id, file, thumbnail, file.name);
 
         if (data.mapType) {
           updateConnectedMaps(data.mapType, file);
@@ -90,6 +92,12 @@ const MapNode = ({ id, data }) => {
         type="source"
         position={Position.Right}
         style={{ background: "#40E0D0", borderRadius: "0%" }}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id={`handle-${id}`}
+        style={{ background: "#40E0D0", borderRadius: "50%" }}
       />
     </div>
   );

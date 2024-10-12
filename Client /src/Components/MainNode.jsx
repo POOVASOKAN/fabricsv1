@@ -3,28 +3,30 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Tooltip } from "@mui/material";
 
 const mapInfo = {
   Diffuse: "Defines the base color of the material.",
   Environment: "Controls environmental settings.",
   Refraction: "Determines how light bends through the material.",
   Bump: "Adds surface detail without changing geometry.",
-  Normal: "Creates a normal map, affecting how the surface is lit.",
+  Normal:
+    "The texture to create a normal map. The RGB values affect the surface normal for each pixel fragment and change the way the color is lit. Normal maps do not change the actual shape of the surface, only the lighting.",
   Displacement: "Modifies the surface geometry for added detail.",
-  Specular: "Determines the shininess and highlight size.",
   Emissive: "Makes the material appear self-illuminated.",
-  Opacity: "Controls the transparency of the material.",
+  Sheen: "Controls the transparency of the material.",
   AO: "Adds shading based on occlusion by surrounding objects.",
   Metalness: "Gives the surface a metallic appearance.",
   Roughness: "Determines the smoothness of the surface.",
+  Clearcoat: "Adds a clear coat to the material.",
 };
 
 const MainNode = ({ data }) => (
   <div
     style={{
-      padding: "20px",
+      padding: "12px 15px",
       backgroundColor: "#fff",
-      border: "2px solid #ddd",
+      border: "1px solid #ddd",
       borderRadius: "12px",
       width: "280px",
       color: "#333",
@@ -36,15 +38,15 @@ const MainNode = ({ data }) => (
     <strong
       style={{
         display: "block",
-        marginBottom: "15px",
-        fontSize: "18px",
+        marginBottom: "12px",
+        fontSize: "15px",
         textAlign: "center",
-        color: "#333",
+        color: "#555",
       }}
     >
       {data.label}
     </strong>
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       {data.maps.map((map, index) => (
         <div
           key={index}
@@ -52,7 +54,7 @@ const MainNode = ({ data }) => (
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "10px 0",
+            padding: "6px 0",
             borderBottom:
               index !== data.maps.length - 1 ? "1px solid #e0e0e0" : "none",
             position: "relative",
@@ -60,21 +62,23 @@ const MainNode = ({ data }) => (
         >
           <span
             style={{
-              fontSize: "14px",
+              fontSize: "13px",
               display: "flex",
               alignItems: "center",
               color: "#333",
             }}
           >
             {map}
-            <InfoOutlinedIcon
-              style={{
-                marginLeft: "8px",
-                fontSize: "16px",
-                color: "#888",
-                cursor: "pointer",
-              }}
-            />
+            <Tooltip title={mapInfo[map]} arrow>
+              <InfoOutlinedIcon
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "14px",
+                  color: "#888",
+                  cursor: "pointer",
+                }}
+              />
+            </Tooltip>
           </span>
 
           <Handle
@@ -83,11 +87,11 @@ const MainNode = ({ data }) => (
             id={`handle-${index}`}
             style={{
               background: "#40E0D0",
-              width: "10px",
-              height: "10px",
-              borderRadius: "0%",
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
               position: "absolute",
-              left: "-18px",
+              left: "-12px",
               top: "50%",
               transform: "translateY(-50%)",
             }}

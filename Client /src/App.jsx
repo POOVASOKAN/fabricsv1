@@ -1,4 +1,12 @@
 import "./App.css";
+import {
+  useCallback,
+  useState,
+  useMemo,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import Split from "react-split";
 import Preview from "./Components/Preview";
 import {
@@ -11,28 +19,48 @@ import {
   addEdge,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { LightProvider } from "./Components/LightContext";
-import MapProvider from "./Components/MapContext";
+// import { LightProvider } from "./Components/LightContext";
+// import MapProvider from "./Components/MapContext";
+import { MapContext } from "./Components/MapContext";
 import MainNode from "./Components/MainNode";
 import MapNode from "./Components/MapNode";
 import ControlGUI from "./Components/ControlGUI";
-import { useCallback, useState, useMemo } from "react";
+
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
+  Snackbar,
+  Alert,
+  IconButton,
+  Box,
 } from "@mui/material";
 // eslint-disable-next-line no-unused-vars
-import { Camera } from "three";
+// import { Camera } from "three";
 import { CameraProvider } from "./Components/CameraContext";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
   const [selectedNode, setSelectedNode] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const [showReactFlow, setShowReactFlow] = useState(true);
+
+  const fileInputRef = useRef(null);
+  const [uploadedModelPath, setUploadedModelPath] = useState(null);
+
+  const mapContext = useContext(MapContext);
+  if (!mapContext) {
+    throw new Error("MapContext must be used within a MapProvider");
+  }
+
+  const { updateConnectedMaps, disconnectMap } = mapContext;
 
   const mainNode = {
     id: "1",
@@ -47,44 +75,57 @@ function App() {
         "Bump",
         "Normal",
         "Displacement",
-        "Specular",
+        "Clearcoat",
         "Emissive",
-        "Opacity",
+        "Sheen",
         "AO",
         "Metalness",
         "Roughness",
+        "Anisotropy",
       ],
     },
   };
 
-  useState(() => setNodes([mainNode]), []);
+  useEffect(() => {
+    setNodes([mainNode]);
+  }, [setNodes]);
 
   const addMapNode = useCallback(() => {
     const newMapNode = {
       id: `map-${nodes.length + 1}`,
       type: "mapNode",
-      position: { x: Math.random() * 250 + 400, y: Math.random() * 250 + 50 },
+      position: { x: Math.random() * 150 + 150, y: Math.random() * 250 + 50 },
       data: {
         label: "Upload a map",
         thumbnail: null,
         mapType: null,
+        file: null,
         updateNodeData: (nodeId, file, thumbnail) => {
-          const fileName = file.name;
           setNodes((nds) =>
             nds.map((node) =>
               node.id === nodeId
                 ? {
                     ...node,
-                    data: { ...node.data, thumbnail, label: fileName },
+                    data: {
+                      ...node.data,
+                      thumbnail,
+                      label: file.name,
+                      file,
+                    },
                   }
                 : node
             )
           );
+
+          const mapNode = nodes.find((node) => node.id === nodeId);
+          if (mapNode && mapNode.data.mapType) {
+            updateConnectedMaps(mapNode.data.mapType, file);
+          }
         },
       },
     };
     setNodes((nds) => [...nds, newMapNode]);
-  }, [nodes, setNodes]);
+  }, [nodes, setNodes, updateConnectedMaps]);
 
   const edgeOptions = {
     style: { strokeWidth: 4, stroke: "#333" },
@@ -92,14 +133,21 @@ function App() {
 
   const onConnect = useCallback(
     (params) => {
+      const sourceNode = nodes.find((node) => node.id === params.source);
+      if (!sourceNode || !sourceNode.data.file) {
+        setSnackbarOpen(true);
+        return;
+      }
+
       const targetNode = nodes.find((node) => node.id === params.target);
-      const targetMapType =
-        targetNode?.data?.maps[
-          parseInt(params.targetHandle?.replace("handle-", ""))
-        ];
+      const targetHandleIndex = params.targetHandle?.replace("handle-", "");
+      if (!targetHandleIndex) return;
+
+      const targetMapType = targetNode?.data?.maps[parseInt(targetHandleIndex)];
 
       if (targetMapType) {
         const mapNodeId = params.source;
+
         setNodes((nds) =>
           nds.map((node) =>
             node.id === mapNodeId
@@ -107,10 +155,13 @@ function App() {
               : node
           )
         );
+
+        updateConnectedMaps(targetMapType, sourceNode.data.file);
+        console.log(`Connected map: ${targetMapType} from node ${mapNodeId}`);
       }
       setEdges((eds) => addEdge({ ...params, animated: true }, eds));
     },
-    [setEdges, nodes, setNodes]
+    [nodes, setNodes, setEdges, updateConnectedMaps]
   );
 
   const onEdgeDoubleClick = useCallback(
@@ -128,10 +179,13 @@ function App() {
               : node
           )
         );
+
+        disconnectMap(mapType);
+        console.log(`Disconnected map: ${mapType}`);
       }
       setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     },
-    [setEdges, nodes, setNodes]
+    [nodes, setNodes, setEdges, disconnectMap]
   );
 
   const onNodeContextMenu = useCallback((event, node) => {
@@ -141,16 +195,39 @@ function App() {
   }, []);
 
   const confirmDeleteNode = useCallback(() => {
-    setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
-    setEdges((eds) =>
-      eds.filter(
-        (e) => e.source !== selectedNode.id && e.target !== selectedNode.id
-      )
-    );
+    if (selectedNode) {
+      const { id, data } = selectedNode;
+
+      if (data.mapType) {
+        disconnectMap(data.mapType);
+      }
+
+      setNodes((nds) => nds.filter((node) => node.id !== id));
+      setEdges((eds) =>
+        eds.filter((edge) => edge.source !== id && edge.target !== id)
+      );
+    }
     setModalOpen(false);
-  }, [selectedNode, setNodes, setEdges]);
+  }, [selectedNode, setNodes, setEdges, disconnectMap]);
 
   const closeModal = () => setModalOpen(false);
+  const closeSnackbar = () => setSnackbarOpen(false);
+
+  const handleFileUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    console.log("File uploaded: ", file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      console.log("File URL: ", url);
+      setUploadedModelPath(url);
+    }
+  };
 
   const nodeTypes = useMemo(
     () => ({ mainNode: MainNode, mapNode: MapNode }),
@@ -158,69 +235,111 @@ function App() {
   );
 
   return (
-    <CameraProvider>
-      <LightProvider>
-        <MapProvider>
-          <div style={{ height: "100vh", width: "100vw" }}>
-            <Split
-              className="split-container"
-              sizes={[50, 50]}
-              minSize={100}
-              expandToMin={false}
-              gutterSize={10}
-              direction="horizontal"
-              cursor="col-resize"
-              style={{ height: "100vh" }}
-            >
-              <Preview />
+    <div style={{ height: "100vh", width: "100vw" }}>
+      {/* Custom Upload Icon */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: "10px",
+          left: "10px",
+          zIndex: 1000,
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+        }}
+        onClick={handleFileUploadClick}
+      >
+        <IconButton component="span">
+          <CloudUploadIcon sx={{ color: "grey", fontSize: 40 }} />
+        </IconButton>
+      </Box>
 
-              <div
-                style={{
-                  flexGrow: 1,
-                  height: "100%",
-                  position: "relative",
-                }}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".fbx"
+        onChange={handleFileUpload}
+        style={{ display: "none" }}
+      />
+      <Split
+        className="split-container"
+        sizes={showReactFlow ? [50, 50] : [100, 0]}
+        // sizes={[50, 50]}
+        minSize={100}
+        expandToMin={false}
+        gutterSize={10}
+        direction="horizontal"
+        cursor="col-resize"
+        style={{ height: "100vh" }}
+      >
+        <Preview
+          uploadedModelPath={uploadedModelPath}
+          style={{ height: "100%" }}
+        />
+        {showReactFlow && (
+          <div
+            style={{
+              flexGrow: 1,
+              height: "100%",
+              position: "relative",
+            }}
+          >
+            <ReactFlowProvider>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onEdgeDoubleClick={onEdgeDoubleClick}
+                onNodeContextMenu={onNodeContextMenu}
+                fitView
+                defaultEdgeOptions={edgeOptions}
               >
-                <ReactFlowProvider>
-                  <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    nodeTypes={nodeTypes}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    onEdgeDoubleClick={onEdgeDoubleClick}
-                    onNodeContextMenu={onNodeContextMenu}
-                    fitView
-                    defaultEdgeOptions={edgeOptions}
-                  >
-                    <Controls />
-                    <Background />
-                  </ReactFlow>
-                </ReactFlowProvider>
-              </div>
-            </Split>
-
-            <ControlGUI addMapNode={addMapNode} />
-
-            <Dialog open={modalOpen} onClose={closeModal}>
-              <DialogTitle>Delete Node</DialogTitle>
-              <DialogContent>
-                Are you sure you want to delete this map node?
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={closeModal} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={confirmDeleteNode} color="secondary">
-                  Delete
-                </Button>
-              </DialogActions>
-            </Dialog>
+                <Controls />
+                <Background />
+              </ReactFlow>
+            </ReactFlowProvider>
           </div>
-        </MapProvider>
-      </LightProvider>
-    </CameraProvider>
+        )}
+      </Split>
+
+      <ControlGUI
+        addMapNode={addMapNode}
+        style={{ height: "100vh", position: "absolute", top: 0 }}
+        setShowReactFlow={setShowReactFlow}
+      />
+
+      <Dialog open={modalOpen} onClose={closeModal}>
+        <DialogTitle>Delete Node</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this map node?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeModal} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDeleteNode} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={closeSnackbar}
+      >
+        <Alert
+          onClose={closeSnackbar}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
+          You must upload a map before connecting nodes.
+        </Alert>
+      </Snackbar>
+    </div>
   );
 }
 

@@ -19,6 +19,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CustomSlider from "../Styles/CustomSlider";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Alert } from "@mui/material";
@@ -36,7 +37,11 @@ const LightSettings = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const maxLights = 5;
+  const [expandedPanel, setExpandedPanel] = useState(null);
 
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    setExpandedPanel(isExpanded ? panel : null);
+  };
   const handleMenuClick = (event, lightId) => {
     setAnchorEl(event.currentTarget);
     setCurrentLightId(lightId);
@@ -143,10 +148,13 @@ const LightSettings = () => {
     >
       <Typography
         sx={{
-          fontSize: "10px",
+          fontSize: "12px",
           fontWeight: "normal",
+          color: "#282828",
+          marginRight: "10px",
           marginLeft: "20px",
-          color: "#333",
+          fontFamily: "Avenir, sans-serif",
+          textAlign: "left",
         }}
       >
         Position
@@ -160,20 +168,38 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield",
+            paddingRight: 0,
+          },
+        }}
         sx={{
-          width: "150px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
+          width: "80px",
           "& .MuiInputBase-root": {
-            height: "25px",
-            padding: "0px",
-            fontSize: "9px",
+            height: "24px",
+            padding: "0px 5px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
           },
         }}
       />
+
       <TextField
         value={light.position?.y ?? 0}
         onChange={(e) =>
@@ -183,14 +209,31 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield",
+            paddingRight: 0,
+          },
+        }}
         sx={{
-          width: "150px",
+          width: "80px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
           "& .MuiInputBase-root": {
-            height: "25px",
+            height: "24px",
             padding: "0px",
-            fontSize: "9px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -206,14 +249,31 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield",
+            paddingRight: 0,
+          },
+        }}
         sx={{
-          width: "150px",
+          width: "80px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
           "& .MuiInputBase-root": {
-            height: "25px",
+            height: "24px",
             padding: "0px",
-            fontSize: "9px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -235,10 +295,13 @@ const LightSettings = () => {
     >
       <Typography
         sx={{
-          fontSize: "10px",
+          fontSize: "12px",
           fontWeight: "normal",
+          color: "#282828",
+          marginRight: "10px",
           marginLeft: "20px",
-          color: "#333",
+          fontFamily: "Avenir, sans-serif",
+          textAlign: "left",
         }}
       >
         Target
@@ -252,14 +315,31 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield",
+            paddingRight: 0, // Remove padding next to the arrow
+          },
+        }}
         sx={{
-          width: "150px",
+          width: "80px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
           "& .MuiInputBase-root": {
-            height: "25px",
+            height: "24px",
             padding: "0px",
-            fontSize: "9px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -275,14 +355,31 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield", // For Firefox
+            paddingRight: 0,
+          },
+        }}
         sx={{
-          width: "150px",
+          width: "80px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
           "& .MuiInputBase-root": {
-            height: "25px",
+            height: "24px",
             padding: "0px",
-            fontSize: "9px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -298,14 +395,31 @@ const LightSettings = () => {
           })
         }
         type="number"
+        inputProps={{
+          style: {
+            MozAppearance: "textfield", // For Firefox
+            paddingRight: 0, // Remove padding next to the arrow
+          },
+        }}
         sx={{
-          width: "150px",
+          width: "80px",
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
+          "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
           "& .MuiInputBase-root": {
-            height: "25px",
+            height: "24px",
             padding: "0px",
-            fontSize: "9px",
+            fontSize: "12px",
             textAlign: "center",
-            backgroundColor: "#e0e0e0",
+            color: "#529d36",
+            backgroundColor: "#ddd",
+            fontFamily: "Avenir, sans-serif",
+            fontWeight: "bold",
           },
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -354,10 +468,10 @@ const LightSettings = () => {
           size="small"
           sx={{
             "& .MuiSwitch-switchBase.Mui-checked": {
-              color: "green",
+              color: "#529D36",
             },
             "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: "green",
+              backgroundColor: "#529D36",
             },
             "& .MuiSwitch-track": {
               backgroundColor: "#ccc",
@@ -424,7 +538,7 @@ const LightSettings = () => {
               color: "green",
             },
             "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: "green",
+              backgroundColor: "#529D36",
             },
             "& .MuiSwitch-track": {
               backgroundColor: "#ccc",
@@ -442,14 +556,14 @@ const LightSettings = () => {
         padding: "5px",
         display: "flex",
         flexDirection: "column",
-        overflowY: "hidden",
+        overflowY: "auto",
         height: "100vh",
       }}
     >
       {/* Light List */}
       <Box
         sx={{
-          height: "calc(100vh - 350px)",
+          flexGrow: 1,
           overflowY: "auto",
           paddingRight: "10px",
           "&::-webkit-scrollbar": { width: "8px" },
@@ -465,14 +579,40 @@ const LightSettings = () => {
             <Accordion
               disableGutters
               elevation={0}
-              sx={{ border: "none", padding: "0px" }}
+              expanded={expandedPanel === light.name} // Check if this panel is expanded
+              onChange={handleAccordionChange(light.name)} // Toggle expanded state
+              sx={{
+                border: "none",
+                padding: "0px",
+                "& .MuiAccordionSummary-root": {
+                  minHeight: "10px",
+                  padding: "0px",
+                },
+                "& .MuiAccordionDetails-root": {
+                  padding: "2px",
+                },
+              }}
             >
               <AccordionSummary
                 sx={{ minHeight: "20px", padding: "0px", margin: 0 }}
               >
-                <ExpandMoreIcon
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  {/* Conditional Rendering for Icon */}
+                  {expandedPanel === light.name ? (
+                    <ExpandMoreIcon sx={{ fontSize: "21px" }} />
+                  ) : (
+                    <ChevronRightIcon sx={{ fontSize: "21px" }} />
+                  )}
+                </Box>
+                {/* <ExpandMoreIcon
                   sx={{ fontSize: "12px", paddingRight: "3px" }}
-                />
+                /> */}
                 {renamingLightId === light.id ? (
                   <TextField
                     value={light.name}
@@ -483,7 +623,21 @@ const LightSettings = () => {
                   />
                 ) : (
                   <Typography
-                    sx={{ fontSize: "8px", fontWeight: "normal", margin: 0 }}
+                    sx={{
+                      width: "117px",
+                      position: "relative",
+                      fontSize: "10px",
+                      letterSpacing: "0.02em",
+                      lineHeight: "35px",
+                      textTransform: "uppercase",
+                      fontWeight: 800,
+                      fontFamily: "Avenir, sans-serif",
+                      color: "#282828",
+                      textAlign: "left",
+                      display: "inline-block",
+                      height: "36px",
+                      margin: 0,
+                    }}
                   >
                     {light.name}
                   </Typography>
@@ -494,6 +648,8 @@ const LightSettings = () => {
                     alignItems: "center",
                     gap: 1,
                     marginLeft: "auto",
+                    fontFamily: "Avenir, sans-serif",
+                    color: "#282828",
                   }}
                 >
                   <IconButton
@@ -558,16 +714,16 @@ const LightSettings = () => {
       {/* Add Light Section */}
       <Box
         sx={{
-          position: "absolute",
-          bottom: 65,
+          position: "sticky",
+          bottom: 0,
           marginTop: "10px",
           width: "100%",
           padding: "10px",
-          backgroundColor: "#f1f1f1",
+          backgroundColor: "#fff",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginBottom: "70px",
+          marginBottom: "0px",
         }}
       >
         <FormControl
@@ -575,21 +731,60 @@ const LightSettings = () => {
           className="custom-text-field"
           sx={{ marginBottom: 3, width: "70%" }}
         >
-          <InputLabel
-            shrink={true}
+          {/* <InputLabel
+            shrink={false}
             sx={{
-              transform: "translate(14px, -6px) scale(0.75)",
+              transform: "translate(7px, -6px) scale(0.75)",
               backgroundColor: "white",
               padding: "0 4px",
             }}
           >
             Light Type
-          </InputLabel>
+          </InputLabel> */}
           <Select
+            displayEmpty
             value={lightType}
             onChange={(e) => setLightType(e.target.value)}
-            label="Light Type"
+            label=""
+            sx={{
+              backgroundColor: "transparent",
+              fontFamily: "Avenir",
+              fontSize: "11px",
+              fontWeight: 400,
+              lineHeight: "35px",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#529d36",
+                borderWidth: "1px",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#529d36",
+              },
+            }}
+            inputProps={{
+              "aria-label": "Without label",
+              style: {
+                fontFamily: "Avenir",
+                fontSize: "11px",
+                fontWeight: 400,
+                lineHeight: "35px",
+                letterSpacing: "0.02em",
+                textAlign: "left",
+              },
+            }}
           >
+            <MenuItem value="" disabled>
+              <span
+                style={{
+                  fontStyle: "normal",
+                  fontFamily: "Avenir",
+                  fontSize: "11px",
+                }}
+              >
+                Light Type
+              </span>
+            </MenuItem>
             <MenuItem value="ambient">Ambient</MenuItem>
             <MenuItem value="hemisphere">Hemisphere</MenuItem>
             <MenuItem value="directional">Directional</MenuItem>
@@ -599,32 +794,63 @@ const LightSettings = () => {
         <TextField
           variant="outlined"
           className="custom-text-field"
-          label="Light Name"
+          placeholder="Light Name"
           value={lightName}
           onChange={(e) => setLightName(e.target.value)}
-          sx={{ marginBottom: 2, width: "70%" }}
-          InputLabelProps={{
-            shrink: true,
-            style: {
-              transform: "translate(14px, -6px) scale(0.75)",
-              backgroundColor: "white",
-              padding: "0 4px",
+          sx={{
+            marginBottom: 2,
+            width: "70%",
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "#529d36",
+                borderWidth: "1px",
+                borderRadius: "4px",
+              },
+              "&:hover fieldset": {
+                borderColor: "#529d36",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#529d36",
+              },
+            },
+            "& .MuiInputBase-input": {
+              fontFamily: "Avenir",
+              fontSize: "11px",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: "35px",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+            },
+            "& .MuiInputBase-input::placeholder": {
+              fontFamily: "Avenir",
+              fontSize: "11px",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: "35px",
+              letterSpacing: "0.02em",
+              textAlign: "left",
+              color: "#666",
             },
           }}
+          InputLabelProps={{
+            shrink: false,
+          }}
         />
+
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "green",
+            backgroundColor: "#529D36",
             color: "white",
-            borderRadius: "10px",
-            flexGrow: 1,
-            fontSize: "10px",
-            padding: "5px 10px",
-            "&:hover": { backgroundColor: "darkgreen" },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            width: "190px",
+            height: "30px",
+            padding: 0,
+            minWidth: 0,
+            borderRadius: "3px 0px 0px 0px",
+            "&:hover": {
+              backgroundColor: "darkgreen",
+            },
           }}
           onClick={handleAddLight}
         >
