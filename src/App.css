@@ -1,3 +1,7 @@
+* {
+  font-family: "Avenir, sans-serif";
+}
+
 .split-container {
   display: flex;
   height: 100vh;
@@ -24,8 +28,8 @@
   width: 90%;
   max-width: 300px;
   height: 30px;
-  border-radius: 8px;
-  border-color: green;
+  border-radius: 4px;
+  border-color: #529d36;
 }
 
 .custom-text-field input {
@@ -35,11 +39,11 @@
 .custom-text-field .MuiOutlinedInput-root {
   height: 100%;
   font-size: 8px;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .custom-text-field .MuiOutlinedInput-notchedOutline {
-  border-color: green !important;
+  border-color: #529d36 !important;
 }
 /* Custom scrollbar styling */
 .custom-accordion {
