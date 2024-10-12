@@ -857,3 +857,4 @@ const CameraSettings = () => {
 
 export default CameraSettings;
 //1 camera full working with context + menu
+//2

@@ -104,3 +104,4 @@ const CustomSlider = ({
 
 export default CustomSlider;
 //v3 - All UI updated
+//v4- Ui with figma

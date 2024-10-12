@@ -137,3 +137,4 @@ export const CameraProvider = ({ children }) => {
   );
 };
 //1 camera full working with context + menu
+//v4 - with UI with figma
