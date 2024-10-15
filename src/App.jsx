@@ -39,7 +39,7 @@ import {
 } from "@mui/material";
 // eslint-disable-next-line no-unused-vars
 // import { Camera } from "three";
-import { CameraProvider } from "./Components/CameraContext";
+
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 function App() {
@@ -90,11 +90,55 @@ function App() {
     setNodes([mainNode]);
   }, [setNodes]);
 
+  //   const addMapNode = useCallback(() => {
+  //     const newMapNode = {
+  //       id: `map-${nodes.length + 1}`,
+  //       type: "mapNode",
+  //       position: { x: Math.random() * 10 + 110, y: Math.random() * 150 + 10 },
+  //       data: {
+  //         label: "Upload a map",
+  //         thumbnail: null,
+  //         mapType: null,
+  //         file: null,
+  //         updateNodeData: (nodeId, file, thumbnail) => {
+  //           setNodes((nds) =>
+  //             nds.map((node) =>
+  //               node.id === nodeId
+  //                 ? {
+  //                     ...node,
+  //                     data: {
+  //                       ...node.data,
+  //                       thumbnail,
+  //                       label: file.name,
+  //                       file,
+  //                     },
+  //                   }
+  //                 : node
+  //             )
+  //           );
+  // //
+  //           const mapNode = nodes.find((node) => node.id === nodeId);
+  //           if (mapNode && mapNode.data.mapType) {
+  //             updateConnectedMaps(mapNode.data.mapType, file);
+  //           }
+  //         },
+  //       },
+  //     };
+  //     setNodes((nds) => [...nds, newMapNode]);
+  //   }, [nodes, setNodes, updateConnectedMaps]);
   const addMapNode = useCallback(() => {
+    const mainNode = nodes.find((node) => node.id === "1");
+    const mainNodeX = mainNode?.position?.x || 250;
+    const mainNodeY = mainNode?.position?.y || 5;
+    const gap = 10;
+
     const newMapNode = {
       id: `map-${nodes.length + 1}`,
       type: "mapNode",
-      position: { x: Math.random() * 150 + 150, y: Math.random() * 250 + 50 },
+      position: {
+        x: mainNodeX - 220 - gap,
+        y: mainNodeY + 50,
+      },
       data: {
         label: "Upload a map",
         thumbnail: null,
@@ -124,11 +168,12 @@ function App() {
         },
       },
     };
+
     setNodes((nds) => [...nds, newMapNode]);
   }, [nodes, setNodes, updateConnectedMaps]);
 
   const edgeOptions = {
-    style: { strokeWidth: 4, stroke: "#333" },
+    style: { strokeWidth: 4, stroke: "#6EB057" },
   };
 
   const onConnect = useCallback(
@@ -194,6 +239,13 @@ function App() {
     setModalOpen(true);
   }, []);
 
+  // Trigger modal to confirm delete when the user clicks the "X" in MapNode
+  const triggerDeleteModal = useCallback((node) => {
+    console.log("Triggering delete modal for node:", node);
+    setSelectedNode(node);
+    setModalOpen(true);
+  }, []);
+
   const confirmDeleteNode = useCallback(() => {
     if (selectedNode) {
       const { id, data } = selectedNode;
@@ -228,10 +280,20 @@ function App() {
       setUploadedModelPath(url);
     }
   };
+  //passing props-
+  // const nodeTypes = useMemo(
+  //   () => ({ mainNode: MainNode, mapNode: MapNode }),
+  //   []
+  // );
 
   const nodeTypes = useMemo(
-    () => ({ mainNode: MainNode, mapNode: MapNode }),
-    []
+    () => ({
+      mainNode: MainNode,
+      mapNode: (props) => (
+        <MapNode {...props} onTriggerDelete={triggerDeleteModal} />
+      ),
+    }),
+    [triggerDeleteModal]
   );
 
   return (
@@ -267,7 +329,7 @@ function App() {
         // sizes={[50, 50]}
         minSize={100}
         expandToMin={false}
-        gutterSize={10}
+        gutterSize={5}
         direction="horizontal"
         cursor="col-resize"
         style={{ height: "100vh" }}
@@ -296,6 +358,7 @@ function App() {
                 onNodeContextMenu={onNodeContextMenu}
                 fitView
                 defaultEdgeOptions={edgeOptions}
+                style={{ background: "#D5D7DB" }}
               >
                 <Controls />
                 <Background />
@@ -345,4 +408,4 @@ function App() {
 
 export default App;
 //v5 with context
-//v5 with figma design
+//v5 with figma design with map UI 
