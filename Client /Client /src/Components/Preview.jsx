@@ -18,8 +18,6 @@ import { LightContext } from "./LightContext";
 import { MapContext } from "./MapContext";
 import { CameraContext } from "../Components/CameraContext";
 import CustomCameraHelper from "../Components/Helper/CustomCameraHelper";
-import { Box, IconButton, Tooltip } from "@mui/material";
-// import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const CameraUpdater = () => {
   const { camera } = useThree();
@@ -52,6 +50,36 @@ const CameraUpdater = () => {
   return null;
 };
 
+//model loading issue fix
+const PreviewScene = ({ model, setCurrentModel }) => {
+  const { scene } = useThree();
+
+  useEffect(() => {
+    if (model) {
+      console.log("Adding new model to scene", model);
+      scene.add(model);
+      setCurrentModel(model);
+      return () => {
+        console.log("Removing previous model from scene", model);
+        scene.remove(model);
+        model.traverse((child) => {
+          if (child.isMesh) {
+            console.log("Disposing geometry and material of:", child.name);
+            child.geometry.dispose();
+            if (Array.isArray(child.material)) {
+              child.material.forEach((material) => material.dispose());
+            } else {
+              child.material.dispose();
+            }
+          }
+        });
+      };
+    }
+  }, [model, scene, setCurrentModel]);
+
+  return null;
+};
+
 const Preview = ({ uploadedModelPath }) => {
   const { lights } = useContext(LightContext);
   const { connectedMaps, materialParams, updateTrigger1 } =
@@ -62,9 +90,8 @@ const Preview = ({ uploadedModelPath }) => {
 
   const [currentMaterials, setCurrentMaterials] = useState([]);
 
-  // const [uploadedModelPath, setUploadedModelPath] = useState(null);
   const defaultModelPath = "/Tetrad-Ruben-Midi-Standard.fbx";
-  const fileInputRef = useRef(null);
+
   const textureLoader = useRef(new TextureLoader()).current;
 
   // Load model
@@ -72,25 +99,31 @@ const Preview = ({ uploadedModelPath }) => {
     const modelPath = uploadedModelPath || defaultModelPath;
 
     const loadModel = () => {
+      console.log("Starting to load model from path:", modelPath);
       const loader = new FBXLoader();
       loader.load(
         modelPath,
         (loadedModel) => {
-          // Clear previous model and materials
-          if (currentModel) {
-            currentModel.traverse((child) => {
-              if (child.isMesh) {
-                child.geometry.dispose();
-                if (child.material) {
-                  if (Array.isArray(child.material)) {
-                    child.material.forEach((material) => material.dispose());
-                  } else {
-                    child.material.dispose();
-                  }
-                }
-              }
-            });
-          }
+          console.log("Model loaded successfully:", loadedModel);
+          // Clear previous model and materials -logic moved up
+          // if (currentModel) {
+          //   console.log("Clearing previous model");
+
+          //   currentModel.traverse((child) => {
+          //     if (child.isMesh) {
+          //       console.log("Disposing geometry and material of:", child.name);
+          //       child.geometry.dispose();
+          //       if (child.material) {
+          //         if (Array.isArray(child.material)) {
+          //           child.material.forEach((material) => material.dispose());
+          //         } else {
+          //           child.material.dispose();
+          //         }
+          //       }
+          //     }
+          //   });
+          // }
+
           loadedModel.traverse((child, index) => {
             if (child.isMesh) {
               const material = currentMaterials[index] || createMaterial();
@@ -99,6 +132,7 @@ const Preview = ({ uploadedModelPath }) => {
               child.receiveShadow = true;
             }
           });
+          console.log("Setting the new model as currentModel");
           setCurrentModel(loadedModel);
         },
         undefined,
@@ -134,7 +168,7 @@ const Preview = ({ uploadedModelPath }) => {
     });
   };
 
-  // Extract material properties from materialParams for easy assignment
+  // Extract material properties from materialParams for easy assignment -
   const extractMaterialProperties = () => {
     const sheenColor = new Color(
       materialParams.sheenColor?.r || 0,
@@ -335,49 +369,8 @@ const Preview = ({ uploadedModelPath }) => {
     material.needsUpdate = true;
   };
 
-  // const handleFileUploadClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
-
-  // const handleFileUpload = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const url = URL.createObjectURL(file);
-  //     setUploadedModelPath(url);
-  //   }
-  // };
-
   return (
     <>
-      {/* <Box
-        sx={{
-          position: "fixed",
-          top: "10px",
-          left: "10px",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          cursor: "pointer",
-        }}
-        onClick={handleFileUploadClick}
-      >
-        <Tooltip title="Upload Model">
-          <IconButton component="span">
-            <CloudUploadIcon sx={{ color: "grey", fontSize: 40 }} />
-          </IconButton>
-        </Tooltip>
-      </Box>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".fbx"
-        onChange={handleFileUpload}
-        style={{ display: "none" }}
-      /> */}
-
       <Canvas
         shadows
         camera={{
@@ -421,7 +414,14 @@ const Preview = ({ uploadedModelPath }) => {
           }
         })}
 
-        {currentModel && <primitive object={currentModel} />}
+        {currentModel && (
+          <PreviewScene
+            model={currentModel}
+            setCurrentModel={setCurrentModel}
+          />
+        )}
+
+        {/* {currentModel && <primitive object={currentModel} />} */}
 
         <gridHelper args={[100, 100, "#ffffff", "#333"]} />
 
@@ -438,4 +438,5 @@ const Preview = ({ uploadedModelPath }) => {
 };
 
 export default Preview;
-//v4 with Ui update figma
+//v4 with Ui update figma -
+//model upload fix

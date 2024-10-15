@@ -721,7 +721,7 @@ const CameraSettings = () => {
         </FormControl>
 
         <TextField
-          variant="outlined" //
+          variant="outlined"
           className="custom-text-field"
           label="Camera Name"
           value={cameraName}

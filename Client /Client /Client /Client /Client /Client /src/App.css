@@ -1,0 +1,95 @@
+* {
+  font-family: "Avenir, sans-serif";
+}
+
+.split-container {
+  display: flex;
+  height: 100vh;
+}
+
+.gutter {
+  background-color: #ddd;
+  cursor: col-resize;
+}
+
+.gutter.gutter-horizontal {
+  width: 10px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.custom-text-field {
+  width: 90%;
+  max-width: 300px;
+  height: 30px;
+  border-radius: 4px;
+  border-color: #529d36;
+}
+
+.custom-text-field input {
+  font-size: 12px;
+}
+
+.custom-text-field .MuiOutlinedInput-root {
+  height: 100%;
+  font-size: 8px;
+  border-radius: 4px;
+}
+
+.custom-text-field .MuiOutlinedInput-notchedOutline {
+  border-color: #529d36 !important;
+}
+/* Custom scrollbar styling */
+.custom-accordion {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.custom-accordion::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-accordion::-webkit-scrollbar-thumb {
+  background-color: green;
+  border-radius: 10px;
+}
+
+.custom-accordion::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-form {
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.login-form h2 {
+  margin-bottom: 20px;
+}
+
+.sign-in-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%;
+}
